@@ -1,0 +1,50 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    user_name: "testuser"
+    user_password: "test@123"
+  remote_user: vagrant
+  tasks:
+  - name: create testuser
+    user:
+      name: "{{user_name}}"
+      password: "{{user_password}}"
+      group: "root"
+      state: present
+  - name: copy files from local /home/ubuntu to remote /home/testuser
+    copy:
+      src: /home/ubuntu/new.txt
+      dest: /home/testuser
+      owner: "{{user_name}}"
+      mode: 0644
+  - name: Install python and pip
+    apt:
+      name: "{{item}}"
+    with_items:
+      - python3
+      - python-pip
+  - name: Install Supervisord
+    pip:
+      name: "supervisor"
+  - command: "cat /etc/timezone"
+    register: TZ
+  - debug:
+      msg: "{{TZ}}"
+  - name: Change TZ
+    command: "timedatectl set-timezone Asia/Kolkata"
+    when: TZ.stdout_lines == "Asia/Kolkata"
+  - name: check files
+    stat:
+      path: "/usr/local/bin/consul"
+    register: file_exists
+  - name: download consul zip
+    get_url:
+      url: "https://releases.hashicorp.com/consul/0.8.0/consul_0.8.0_linux_amd64.zip"
+      dest: "/usr/local/bin"
+    when: file_exists.stat.exists == False
+  - name: unzip consul
+    unarchive:
+      src: "/usr/local/bin/consul_0.8.0_linux_amd64.zip"
+      dest: "/usr/local/bin"
+    when: file_exists.stat.exists == False
