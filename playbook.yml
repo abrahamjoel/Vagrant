@@ -3,13 +3,11 @@
   become: yes
   vars:
     user_name: "testuser"
-    user_password: "test@123"
   remote_user: vagrant
   tasks:
   - name: create testuser
     user:
       name: "{{user_name}}"
-      password: "{{user_password}}"
       group: "root"
       state: present
   - name: copy files from local /home/ubuntu to remote /home/testuser
