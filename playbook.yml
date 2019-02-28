@@ -44,3 +44,4 @@
     when: file_exists.stat.exists == False
   - name: unzip consul
     command: "unzip /usr/local/bin/consul_0.8.0_linux_amd64.zip"
+    when: file_exists.stat.exists == False
