@@ -22,6 +22,7 @@
     with_items:
       - python3
       - python-pip
+      - unzip
   - name: Install Supervisord
     pip:
       name: "supervisor"
@@ -42,7 +43,4 @@
       dest: "/usr/local/bin"
     when: file_exists.stat.exists == False
   - name: unzip consul
-    unarchive:
-      src: "/usr/local/bin/consul_0.8.0_linux_amd64.zip"
-      dest: "/usr/local/bin"
-    when: file_exists.stat.exists == False
+    command: "unzip /usr/local/bin/consul_0.8.0_linux_amd64.zip"
